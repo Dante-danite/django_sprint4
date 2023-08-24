@@ -56,7 +56,8 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('blog:profile', args=(self.request.user.get_username(),))
+        username = self.request.user.get_username()
+        return reverse('blog:profile', args=(username,))
 
 
 class PostEditView(LoginRequiredMixin, UpdateView):
@@ -93,8 +94,10 @@ def category_posts(request, slug):
 
     now = timezone.now()
     category = get_object_or_404(Category, slug=slug, is_published=True)
-    posts = category.posts.all().filter(pub_date__lt=now,
-                                        is_published=True).order_by('-pub_date')
+    posts = category.posts.all().filter(
+                                        pub_date__lt=now,
+                                        is_published=True
+                                        ).order_by('-pub_date')
 
     paginator = Paginator(posts, settings.POSTS_LIMIT)
     page_number = request.GET.get('page')
