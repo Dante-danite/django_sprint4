@@ -8,7 +8,8 @@ User = get_user_model()
 class BaseModel(models.Model):
     created_at = models.DateTimeField(
         verbose_name='Добавлено',
-        auto_now_add=True)
+        auto_now_add=True
+    )
     is_published = models.BooleanField(
         default=True,
         verbose_name='Опубликовано',

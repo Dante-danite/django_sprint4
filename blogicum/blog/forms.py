@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django import forms
+
 from .models import Post, Comment
 
 User = get_user_model()
@@ -8,7 +9,7 @@ User = get_user_model()
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ('title', 'text', 'pub_date', 'category', 'image')
+        fields = ('title', 'text', 'pub_date', 'category', 'image', 'location')
         widgets = {
             'pub_date': forms.DateTimeInput(format='%d/%m/%Y %H:%M',
                                             attrs={'type': 'datetime-local'})}
