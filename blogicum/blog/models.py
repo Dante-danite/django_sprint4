@@ -85,16 +85,16 @@ class Post(BaseModel):
     )
     image = models.ImageField('Фото', blank=True, upload_to='post_images')
 
-    @property
-    def comment_count(self):
-        return self.comments.count()
-
     class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
 
     def __str__(self):
         return self.title
+
+    @property
+    def comment_count(self):
+        return self.comments.count()
 
 
 class Comment(BaseModel):
@@ -109,7 +109,7 @@ class Comment(BaseModel):
         null=True,
         on_delete=models.SET_NULL,
         related_name='comments',
-        verbose_name='hfgd'
+        verbose_name='Заголовок поста'
     )
 
     class Meta:
