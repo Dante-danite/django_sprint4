@@ -1,15 +1,17 @@
-from django.utils import timezone
 from django.conf import settings
-from django.shortcuts import get_object_or_404, render, redirect
-from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, UpdateView, DeleteView
-from django.urls import reverse
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from django.db.models import Q
-from blog.models import Category, Post, Comment
-from .forms import PostForm, UserForm, CommentForm
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils import timezone
+from django.views.generic import CreateView, DeleteView, UpdateView
+
+from blog.models import Category, Comment, Post
+
+from .forms import CommentForm, PostForm, UserForm
 
 
 def index(request):
@@ -19,7 +21,8 @@ def index(request):
     posts = Post.objects.filter(
         category__is_published=True,
         is_published=True,
-        pub_date__lt=now).order_by('-pub_date')
+        pub_date__lt=now
+        ).order_by('-pub_date')
     paginator = Paginator(posts, settings.POSTS_LIMIT)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -38,7 +41,7 @@ def post_detail(request, pk):
 
     post = get_object_or_404(posts, id=pk)
 
-    comments = post.comments.all().order_by('created_at')
+    comments = post.comments.all()
     form = CommentForm()
     template = 'blog/detail.html'
     context = {'post': post, 'form': form, 'comments': comments}
@@ -94,7 +97,7 @@ def category_posts(request, slug):
 
     now = timezone.now()
     category = get_object_or_404(Category, slug=slug, is_published=True)
-    posts = category.posts.all().filter(
+    posts = category.posts.filter(
         pub_date__lt=now,
         is_published=True
     ).order_by('-pub_date')

@@ -115,4 +115,3 @@ class Comment(BaseModel):
     class Meta:
         verbose_name = 'коммент'
         verbose_name_plural = 'комментарии'
-        ordering = ('-created_at',)
