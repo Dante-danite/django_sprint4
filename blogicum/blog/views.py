@@ -22,7 +22,7 @@ def index(request):
         category__is_published=True,
         is_published=True,
         pub_date__lt=now
-        ).order_by('-pub_date')
+        ).select_related('author', 'category', 'location')
     paginator = Paginator(posts, settings.POSTS_LIMIT)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -32,14 +32,14 @@ def index(request):
 
 
 @login_required
-def post_detail(request, pk):
+def post_detail(request, post_id):
     now = timezone.now()
 
     posts = Post.objects.filter(Q(is_published=True,
                                   category__is_published=True,
                                   pub_date__lt=now) | Q(author=request.user))
 
-    post = get_object_or_404(posts, id=pk)
+    post = get_object_or_404(posts, id=post_id)
 
     comments = post.comments.all()
     form = CommentForm()
@@ -71,7 +71,7 @@ class PostEditView(LoginRequiredMixin, UpdateView):
     def dispatch(self, request, *args, **kwargs):
         self.post_id = kwargs['pk']
         if self.get_object().author != request.user:
-            return redirect('blog:post_detail', pk=self.post_id)
+            return redirect('blog:post_detail', post_id=self.post_id)
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
@@ -85,7 +85,7 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     def dispatch(self, request, *args, **kwargs):
         self.post_id = kwargs['pk']
         if self.get_object().author != request.user:
-            return redirect('blog:post_detail', pk=self.post_id)
+            return redirect('blog:post_detail', post_id=self.post_id)
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
@@ -147,7 +147,7 @@ def add_comment(request, post_id):
         comment.author = request.user
         comment.post = post
         comment.save()
-    return redirect('blog:post_detail', pk=post_id)
+    return redirect('blog:post_detail', post_id=post_id)
 
 
 @login_required
@@ -155,7 +155,7 @@ def edit_comment(request, comment_id, post_id):
     instance = get_object_or_404(Comment, id=comment_id, post_id=post_id)
     form = CommentForm(request.POST or None, instance=instance)
     if instance.author != request.user:
-        return redirect('blog:post_detail', pk=post_id)
+        return redirect('blog:post_detail', post_id=post_id)
     context = {
         'form': form,
         'comment': instance
@@ -163,7 +163,7 @@ def edit_comment(request, comment_id, post_id):
 
     if form.is_valid():
         form.save()
-        return redirect('blog:post_detail', pk=post_id)
+        return redirect('blog:post_detail', post_id=post_id)
     return render(request, 'blog/comment.html', context)
 
 
@@ -171,9 +171,9 @@ def edit_comment(request, comment_id, post_id):
 def delete_comment(request, comment_id, post_id):
     instance = get_object_or_404(Comment, id=comment_id, post_id=post_id)
     if instance.author != request.user:
-        return redirect('blog:post_detail', pk=post_id)
+        return redirect('blog:post_detail', post_id=post_id)
     context = {'comment': instance}
     if request.method == 'POST':
         instance.delete()
-        return redirect('blog:post_detail', pk=post_id)
+        return redirect('blog:post_detail', post_id=post_id)
     return render(request, 'blog/comment.html', context)

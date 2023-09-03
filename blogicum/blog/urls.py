@@ -27,7 +27,7 @@ urlpatterns = [
         name='index'
     ),
     path(
-        'posts/<int:pk>/',
+        'posts/<int:post_id>/',
         views.post_detail,
         name='post_detail'
     ),
