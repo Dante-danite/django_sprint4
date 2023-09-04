@@ -121,9 +121,9 @@ class PostDetailView(LoginRequiredMixin, DetailView):
     template_name = 'blog/detail.html'
 
     def get_object(self, queryset=None):
-        posts = Post.objects.filter(Q(is_published=True,
-                                      category__is_published=True,
-                                      pub_date__lt=timezone.now()) | Q(author=self.request.user))
+        posts = Post.objects.filter(
+            Q(is_published=True, category__is_published=True,
+              pub_date__lt=timezone.now()) | Q(author=self.request.user))
 
         return get_object_or_404(posts, pk=self.kwargs['post_id'])
 
