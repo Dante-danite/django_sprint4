@@ -101,7 +101,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 POSTS_LIMIT = 10
 
 LOGIN_REDIRECT_URL = 'blog:index'
-LOGIN_URL = '/auth/login/'
+LOGIN_URL = 'login'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -109,4 +109,4 @@ EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
 
 TEMPLATES_DIR = BASE_DIR / 'templates'
 
-CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
+CSRF_FAILURE_VIEW = 'pages.views.csrf_failure'
