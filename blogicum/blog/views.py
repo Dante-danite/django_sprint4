@@ -1,21 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from django.db.models import Q
-from django.views.generic import (
-    ListView,
-    DetailView,
-    CreateView,
-    UpdateView,
-    DeleteView,
-    View)
 from django.utils import timezone
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  UpdateView, View)
 
-from .models import Post, Category, Comment
-
-from .forms import PostForm, CommentForm, ProfileEditForm
+from .forms import CommentForm, PostForm, ProfileEditForm
+from .models import Category, Comment, Post
 from .utils import get_post_data
 
 User = get_user_model()

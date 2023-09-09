@@ -1,17 +1,19 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
 User = get_user_model()
 
 
 class BaseModel(models.Model):
-    is_published = (
-        models.BooleanField(
-            default=True,
-            verbose_name='Опубликовано',
-            help_text='Снимите галочку, чтобы скрыть публикацию.'))
-    created_at = models.DateTimeField(auto_now_add=True,
-                                      verbose_name='Добавлено')
+    created_at = models.DateTimeField(
+        verbose_name='Добавлено',
+        auto_now_add=True
+    )
+    is_published = models.BooleanField(
+        default=True,
+        verbose_name='Опубликовано',
+        help_text='Снимите галочку, чтобы скрыть публикацию.'
+    )
 
     class Meta:
         abstract = True
@@ -105,4 +107,4 @@ class Comment(BaseModel):
         ordering = ('created_at',)
 
     def __str__(self):
-        return f"Комментарий пользователя {self.author}"
+        return f'Комментарий пользователя {self.author}'
