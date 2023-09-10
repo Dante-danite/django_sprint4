@@ -110,3 +110,5 @@ EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
 TEMPLATES_DIR = BASE_DIR / 'templates'
 
 CSRF_FAILURE_VIEW = 'pages.views.csrf_failure'
+
+POSTS_PER_PAGE = 10  # постов на странице
