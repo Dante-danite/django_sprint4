@@ -31,14 +31,18 @@ class PostCreateView(LoginRequiredMixin, PostMixin, CreateView):
         return reverse("blog:profile", args=[self.request.user.username])
 
 
-class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, PostMixin, UpdateView):
+class PostUpdateView(LoginRequiredMixin,
+                     UserPassesTestMixin,
+                     PostMixin,
+                     UpdateView):
     form_class = PostForm
     pk_url_kwarg = 'post_id'
 
-    def dispatch(self, request, *args, **kwargs):
-        if self.get_object().author != request.user:
-            return redirect('blog:post_detail', post_id=self.kwargs['post_id'])
-        return super().dispatch(request, *args, **kwargs)
+    def test_func(self):
+        return self.get_object().author == self.request.user
+
+    def handle_no_permission(self):
+        return redirect('blog:post_detail', post_id=self.kwargs['post_id'])
 
     def get_success_url(self):
         return reverse('blog:post_detail',
@@ -59,7 +63,10 @@ class PostDeleteView(LoginRequiredMixin, PostMixin, DeleteView):
         return context
 
     def get_success_url(self):
-        return reverse('blog:profile', kwargs={'username': self.request.user.username})
+        return reverse(
+            'blog:profile',
+            kwargs={'username': self.request.user.username}
+        )
 
 
 class IndexListView(ListView):
