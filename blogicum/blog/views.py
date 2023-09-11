@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -31,7 +31,7 @@ class PostCreateView(LoginRequiredMixin, PostMixin, CreateView):
         return reverse("blog:profile", args=[self.request.user.username])
 
 
-class PostUpdateView(LoginRequiredMixin, PostMixin, UpdateView):
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, PostMixin, UpdateView):
     form_class = PostForm
     pk_url_kwarg = 'post_id'
 
@@ -83,11 +83,13 @@ class ProfileListView(ListView):
     template_name = 'blog/profile.html'
 
     def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs['username'])
+
         return (
             self.model.objects.select_related('author')
-            .filter(author__username=self.kwargs['username'])
+            .filter(author__id=user.id)
             .annotate(comment_count=Count('comments'))
-            .order_by("-pub_date"))
+            .order_by('-pub_date'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
